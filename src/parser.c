@@ -65,6 +65,8 @@ clockin_status_t parse_tasks_from_file(char* path, task_buffer_t task_buffer) {
 		task_index++;
 	}
 
+	task_buffer.count = task_index - 1;
+
 	fclose(task_file);
 
 	free(line_buffer);
