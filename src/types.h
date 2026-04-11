@@ -17,9 +17,6 @@ static const char* clockin_status_strings[] = { CLOCKIN_STATUSES(CHOOSE_STR) };
 
 typedef struct task_t {
 	char description[512];
-	char tags[256][64];
-	uint32_t tag_count;
-	uint32_t id;
 } task_t;
 
 typedef struct task_buffer_t {

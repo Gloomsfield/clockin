@@ -1,17 +1,14 @@
 #include "parser.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-typedef enum {
-	CLOCKIN_PARSE_TASK_READ,
-	CLOCKIN_PARSE_TAG_READ,
-} clockin_parse_state;
+clockin_status_t read_tasks_for_guild(char* task_directory_path, uint64_t guild_id, task_buffer_t* task_buffer) {
+	char guild_path[24] = { '\0' };
+	snprintf(guild_path, 23, "%lu.txt", guild_id);
 
-// the worst code i've ever written
-// TODO - geez
-clockin_status_t parse_tasks_from_file(char* path, task_buffer_t* task_buffer) {
-	FILE* task_file = fopen(path, "r");
+	FILE* task_file = fopen(guild_path, "r");
 
 	if(!task_file) { return CLOCKIN_TASK_FILE_READ_FAIL; }
 
@@ -21,48 +18,7 @@ clockin_status_t parse_tasks_from_file(char* path, task_buffer_t* task_buffer) {
 	uint32_t task_index = 0;
 
 	while(fgets(line_buffer, line_buffer_length, task_file))  {
-		clockin_parse_state current_state = CLOCKIN_PARSE_TASK_READ;
-
-		uint32_t c_index = 0;
-		uint32_t c_index_offset = 0;
-		char c = line_buffer[c_index];
-
-		uint32_t tag_index = 0;
-
-		while(c != '\0') {
-			if(c == '|') {
-				if(current_state == CLOCKIN_PARSE_TAG_READ) {
-					task_buffer->tasks[task_index].tags[tag_index][c_index - c_index_offset] = '\0';
-
-					tag_index++;
-				} else if(current_state == CLOCKIN_PARSE_TASK_READ) {
-					task_buffer->tasks[task_index].description[c_index - c_index_offset] = '\0';
-				}
-
-				c_index++;
-				c = line_buffer[c_index];
-				c_index_offset = c_index;
-
-				current_state = CLOCKIN_PARSE_TAG_READ;
-
-				continue;
-			}
-
-			if(current_state == CLOCKIN_PARSE_TASK_READ) {
-				task_buffer->tasks[task_index].description[c_index - c_index_offset] = c;
-			}
-
-			if(current_state == CLOCKIN_PARSE_TAG_READ) {
-				task_buffer->tasks[task_index].tags[tag_index][c_index - c_index_offset] = c;
-			}
-
-			c_index++;
-			c = line_buffer[c_index];
-		}
-
-		if(tag_index > 0) {
-			task_buffer->tasks[task_index].tags[tag_index - 1][c_index - c_index_offset] = '\0';
-		}
+		strcpy(task_buffer->tasks[task_index].description, line_buffer);
 
 		task_index++;
 	}
