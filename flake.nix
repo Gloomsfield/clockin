@@ -37,6 +37,9 @@
 						-isystem${pkgs.clangStdenv.cc.libc.dev}/include/
 						-isystem${pkgs.curl.dev}/include/
 						-isystem${pkgs.concord}/include/
+
+						-DGUILD_ID=0
+						-DBOT_TOKEN=\"aaaaaaaa\"
 					'';
 					separator = "\n";
 				};
