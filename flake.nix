@@ -26,6 +26,8 @@
 				clang-tools
 				gnumake
 
+				curl
+
 				concord
 			];
 
@@ -33,6 +35,7 @@
 				clangd_flags = collapse_multiline {
 					string = ''
 						-isystem${pkgs.clangStdenv.cc.libc.dev}/include/
+						-isystem${pkgs.curl.dev}/include/
 						-isystem${pkgs.concord}/include/
 					'';
 					separator = "\n";
