@@ -18,9 +18,6 @@ clockin_status_t parse_tasks_from_file(char* path, task_buffer_t task_buffer) {
 	const int line_buffer_length = 512;
 	char* line_buffer = calloc(line_buffer_length, sizeof(char));
 
-	const int description_buffer_length = 512;
-	char* description_buffer = calloc(description_buffer_length, sizeof(char));
-
 	uint32_t task_index = 0;
 
 	while(fgets(line_buffer, line_buffer_length, task_file))  {
@@ -39,7 +36,7 @@ clockin_status_t parse_tasks_from_file(char* path, task_buffer_t task_buffer) {
 
 					tag_index++;
 				} else if(current_state == CLOCKIN_PARSE_TASK_READ) {
-					description_buffer[c_index] = '\0';
+					task_buffer.tasks[task_index].description[c_index - c_index_offset] = '\0';
 				}
 
 				c_index++;
@@ -69,5 +66,7 @@ clockin_status_t parse_tasks_from_file(char* path, task_buffer_t task_buffer) {
 	}
 
 	fclose(task_file);
+
+	free(line_buffer);
 }
 
