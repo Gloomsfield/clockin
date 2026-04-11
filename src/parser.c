@@ -4,11 +4,26 @@
 #include <stdlib.h>
 #include <string.h>
 
-clockin_status_t read_tasks_for_guild(char* task_directory_path, uint64_t guild_id, task_buffer_t* task_buffer) {
-	char guild_path[24] = { '\0' };
-	snprintf(guild_path, 23, "%lu.txt", guild_id);
+#define GUILD_ID_STRING_LENGTH 19
+
+clockin_status_t read_tasks_for_guild(
+	clockin_config_t* config,
+	uint64_t guild_id,
+	task_buffer_t* task_buffer
+) {
+	// directory path + guild id + ".txt" + '\0'
+	uint32_t path_length = strlen(config->task_directory) + GUILD_ID_STRING_LENGTH + 4 + 1;
+
+	char* guild_path = calloc(
+		path_length,
+		sizeof(char)
+	);
+
+	sprintf(guild_path, "%s/%lu.txt", config->task_directory, guild_id);
 
 	FILE* task_file = fopen(guild_path, "r");
+
+	free(guild_path);
 
 	if(!task_file) { return CLOCKIN_TASK_FILE_READ_FAIL; }
 

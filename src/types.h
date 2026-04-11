@@ -25,3 +25,7 @@ typedef struct task_buffer_t {
 	uint32_t count;
 } task_buffer_t;
 
+typedef struct clockin_config_t {
+	char* task_directory;
+} clockin_config_t;
+
