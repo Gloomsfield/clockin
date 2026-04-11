@@ -26,6 +26,8 @@
 				clang-tools
 				gnumake
 
+				gdb
+
 				curl
 
 				concord

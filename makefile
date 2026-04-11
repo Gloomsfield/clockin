@@ -1,11 +1,11 @@
-CFLAGS = -Wall -std=c99
+CFLAGS = -Wall -std=c99 -g
 LFLAGS = -lcurl -ldiscord
 
 SRC_DIR = src
 BUILD_DIR = build
 SECRETS_DIR = secrets
 
-SRC_FILES = main.c
+SRC_FILES = main.c parser.c
 
 SRC_PATHS = $(SRC_FILES:%=$(SRC_DIR)/%)
 
@@ -18,7 +18,7 @@ $(BUILD_DIR)/clockin: $(OBJ_PATHS)
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	mkdir -p $(BUILD_DIR)
-	@clang -DBOT_TOKEN=\"$$(cat $(SECRETS_DIR)/bot_token.txt)\" -DGUILD_ID=$$(cat $(SECRETS_DIR)/guild_id.txt) -MMD -c $< -o $@
+	@clang -DBOT_TOKEN=\"$$(cat $(SECRETS_DIR)/bot_token.txt)\" -DGUILD_ID=$$(cat $(SECRETS_DIR)/guild_id.txt) -MMD -c $(CFLAGS) $< -o $@
 
 .PHONY: clean
 clean:
