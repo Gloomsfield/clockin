@@ -18,21 +18,27 @@
 #define BOT_TOKEN "aaaaaaaa"
 #endif
 
-clockin_state_t* clockin_state;
-
 void on_ready(struct discord* client, const struct discord_ready* event) {
 	struct discord_create_guild_application_command clockin_tasks_params = {
 		.name = "clockin-tasks",
 		.description = "list tasks",
 	};
 
-	discord_create_guild_application_command(client, event->application->id, GUILD_ID, &clockin_tasks_params, NULL);
+	discord_create_guild_application_command(
+		client,
+		event->application->id,
+		GUILD_ID,
+		&clockin_tasks_params,
+		NULL
+	);
 }
 
 void on_interaction(struct discord* client, const struct discord_interaction* event) {
 	if(event->type != DISCORD_INTERACTION_APPLICATION_COMMAND) {
 		return;
 	}
+
+	clockin_state_t* clockin_state = discord_get_data(client);
 
 	if(strcmp(event->data->name, "clockin-tasks") == 0) {
 		uint32_t guild_index = 0;
@@ -47,7 +53,11 @@ void on_interaction(struct discord* client, const struct discord_interaction* ev
 
 		char* message = calloc(2048, sizeof(char));
 
-		if(write_tasks(clockin_state->task_buffers[guild_index], message, 2048) != CLOCKIN_SUCCESS) {
+		if(write_tasks(
+			clockin_state->task_buffers[guild_index],
+			message,
+			2048
+		) != CLOCKIN_SUCCESS) {
 			return;
 		}
 
@@ -74,13 +84,16 @@ int main(int argc, const char* argv[]) {
 		.guild_capacity = 4,
 	};
 
-	clockin_state = calloc(1, sizeof(clockin_state_t));
+	clockin_state_t* clockin_state = calloc(1, sizeof(clockin_state_t));
 
 	if(new_state(config, &clockin_state) != CLOCKIN_SUCCESS) {
 		exit(-3);
 	}
 
 	struct discord* client = discord_init(BOT_TOKEN);
+
+	discord_set_data(client, clockin_state);
+
 	discord_set_on_ready(client, &on_ready);
 	discord_set_on_interaction_create(client, &on_interaction);
 	discord_run(client);
