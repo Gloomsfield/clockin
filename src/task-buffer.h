@@ -13,7 +13,7 @@ typedef struct task_buffer_t {
 typedef struct clockin_state_t clockin_state_t;
 clockin_status_t new_task_buffer(clockin_config_t config, task_buffer_t** buffer);
 
-clockin_status_t print_to
+clockin_status_t write_tasks(task_buffer_t* buffer, char* out, uint32_t length);
 
 void free_task_buffer(task_buffer_t** buffer);
 

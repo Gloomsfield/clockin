@@ -1,5 +1,6 @@
 #include "task-buffer.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -13,6 +14,36 @@ clockin_status_t new_task_buffer(clockin_config_t config, task_buffer_t** buffer
 	}
 
 	memcpy(*buffer, &new_buffer, sizeof(task_buffer_t));
+
+	return CLOCKIN_SUCCESS;
+}
+
+clockin_status_t write_tasks(task_buffer_t* buffer, char* out, uint32_t length) {
+	char* str = calloc(length, sizeof(char));
+
+	uint32_t length_remaining = length;
+	
+	for(int i = 0; i < buffer->count; i++) {
+		uint32_t description_length = strlen(buffer->tasks[i]->description) + 1;
+
+		if(length_remaining < description_length) {
+			free(str);
+
+			return CLOCKIN_PRINT_STRING_BUFFER_TOO_SMALL;
+		}
+
+		snprintf(
+			&(str[length - length_remaining]),
+			description_length,
+			"%s\n", buffer->tasks[i]->description
+		);
+
+		length_remaining -= description_length;
+	}
+
+	strcpy(out, str);
+
+	free(str);
 
 	return CLOCKIN_SUCCESS;
 }
