@@ -6,44 +6,50 @@
 
 #define GUILD_ID_STRING_LENGTH 19
 
-clockin_status_t populate_guild_tasks(
-	clockin_config_t* config,
-	uint64_t guild_id,
-	task_buffer_t* task_buffer
-) {
+clockin_status_t populate_tasks_for_guild(clockin_state_t* state, uint64_t guild_id) {
 	// directory path + guild id + ".txt" + '\0'
-	uint32_t path_length = strlen(config->task_directory) + GUILD_ID_STRING_LENGTH + 4 + 1;
+	uint32_t path_length = strlen(state->config->task_directory) + GUILD_ID_STRING_LENGTH + 4 + 1;
 
 	char* guild_path = calloc(
 		path_length,
 		sizeof(char)
 	);
 
-	sprintf(guild_path, "%s/%lu.txt", config->task_directory, guild_id);
+	sprintf(guild_path, "%s/%lu.txt", state->config->task_directory, guild_id);
 
-	FILE* task_file = fopen(guild_path, "r");
+	// have to use append+ here in case the file doesn't exist
+	FILE* task_file = fopen(guild_path, "a+");
 
 	free(guild_path);
 
 	if(!task_file) { return CLOCKIN_TASK_FILE_READ_FAIL; }
 
-	const int line_buffer_length = 512;
-	char* line_buffer = calloc(line_buffer_length, sizeof(char));
+	char* line_buffer = calloc(state->config->task_description_length + 1, sizeof(char));
+
+	uint32_t guild_index = 0;
+
+	while(state->guild_ids[guild_index] != guild_id) {
+		if(guild_index > state->guild_count) {
+			if(guild_index > state->config->guild_capacity) {
+				return CLOCKIN_GUILD_CAPACITY_TOO_SMALL;
+			}
+
+			state->guild_ids[guild_index] = guild_id;
+
+			break;
+		}
+
+		guild_index++;
+	}
 
 	uint32_t task_index = 0;
 
-	while(fgets(line_buffer, line_buffer_length, task_file))  {
-		strcpy(task_buffer->tasks[task_index].description, line_buffer);
+	while(fgets(line_buffer, state->config->task_description_length + 1, task_file)) {
+		strcpy(state->task_buffers[guild_index]->tasks[task_index]->description, line_buffer);
 
 		task_index++;
 	}
 
-	task_buffer->count = task_index;
-
 	fclose(task_file);
-
-	free(line_buffer);
-
-	return CLOCKIN_SUCCESS;
 }
 

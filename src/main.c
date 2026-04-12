@@ -16,7 +16,7 @@
 #define BOT_TOKEN "aaaaaaaa"
 #endif
 
-static clockin_state_t clockin_state;
+static clockin_state_t* clockin_state;
 
 void on_ready(struct discord* client, const struct discord_ready* event) {
 	struct discord_create_guild_application_command clockin_tasks_params = {
@@ -37,22 +37,26 @@ void on_interaction(struct discord* client, const struct discord_interaction* ev
 
 		uint32_t response_buffer_index = 0;
 
-		for(uint32_t i = 0; i < task_buffer.count; i++) {
-			int byte_count = snprintf(&(response_buffer[response_buffer_index]), 1024 - response_buffer_index, "task: %s\n", task_buffer.tasks[i].description);
-			response_buffer_index += byte_count;
+		uint32_t guild_index = 0;
 
-			if(byte_count < 1){
-				printf("error! writing to response buffer failed!");
-				return;
-			}
+		for(guild_index = 0; guild_index < clockin_state->guild_count; guild_index++) {
+			if(event->guild_id == clockin_state->guild_ids[guild_index]) { break; }
 		}
 
-		struct discord_interaction_response response_params = {
-			.type = DISCORD_INTERACTION_CHANNEL_MESSAGE_WITH_SOURCE,
-			.data = &(struct discord_interaction_callback_data) { .content = response_buffer, },
-		};
+		if(clockin_state->guild_count <= guild_index) {
+			discord_create_interaction_response(
+				client,
+				event->id,
+				event->token,
+				&(struct discord_interaction_response) {
+					.type = DISCORD_INTERACTION_CHANNEL_MESSAGE_WITH_SOURCE,
+					.data = &(struct discord_interaction_callback_data) { .content = "this server doesn't have any tasks!", },
+				},
+				NULL
+			);
 
-		discord_create_interaction_response(client, event->id, event->token, &response_params, NULL);
+			return;
+		}
 	}
 }
 
@@ -74,22 +78,15 @@ int main2(int argc, const char* argv[]) {
 		exit(-1);
 	}
 
-	clockin_config_t config = {
-		.task_directory = argv[1],
-		.task_capacity = 512,
-	};
-
-	task_buffer_t task_buffer = {
-		.capacity = 512,
-		.count = 0,
-	};
-
-	task_t* task_memory = calloc(task_buffer.capacity, sizeof(task_t));
-	task_buffer.tasks = task_memory;
-
-	if(parse_tasks_from_file("./examples/tasks.txt", &task_buffer) != CLOCKIN_SUCCESS) {
-		exit(-1);
-	}
+	if(new_state(
+		(clockin_config_t) {
+			.task_directory = argv[1],
+			.task_capacity = 128,
+			.task_description_length = 512,
+			.guild_capacity = 4,
+		},
+		&clockin_state
+	) != CLOCKIN_SUCCESS) { exit(-3); }
 
 	struct discord* client = discord_init(BOT_TOKEN);
 	discord_set_on_ready(client, &on_ready);

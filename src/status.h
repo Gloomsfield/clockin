@@ -8,6 +8,7 @@
 	F(CLOCKIN_TASK_FILE_READ_FAIL, "failed to read the task file!") \
 	F(CLOCKIN_INSUFFICIENT_TASK_MEMORY, "insufficient memory allocated for task storage!") \
 	F(CLOCKIN_TASK_BUFFER_CAPACITY_TOO_SMALL, "task buffer capacity too small!")\
+	F(CLOCKIN_GUILD_CAPACITY_TOO_SMALL, "guild capacity too small!") \
 
 
 #define CHOOSE_ENUM(E, S) E,

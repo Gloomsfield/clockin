@@ -19,7 +19,8 @@ clockin_status_t new_task_buffer(clockin_config_t config, task_buffer_t** buffer
 
 void free_task_buffer(task_buffer_t** buffer) {
 	for(uint32_t i = 0; i < (*buffer)->capacity; i++) {
-		
+		free_task(&(*buffer)->tasks[i]);
+		(*buffer)->tasks[i] = NULL;
 	}
 
 	free(*buffer);
