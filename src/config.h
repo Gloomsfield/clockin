@@ -7,7 +7,7 @@ typedef struct clockin_config_t {
 
 	const uint32_t task_capacity;
 
-	const uint32_t task_description_length; // ?
+	const uint32_t task_description_length;
 	
 	const uint32_t guild_capacity;
 } clockin_config_t;
