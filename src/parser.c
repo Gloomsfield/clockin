@@ -29,7 +29,7 @@ clockin_status_t populate_tasks_for_guild(clockin_state_t* state, uint64_t guild
 	uint32_t guild_index = 0;
 
 	while(state->guild_ids[guild_index] != guild_id) {
-		if(guild_index > state->guild_count) {
+		if(state->guild_count <= guild_index) {
 			if(guild_index > state->config->guild_capacity) {
 				return CLOCKIN_GUILD_CAPACITY_TOO_SMALL;
 			}
@@ -45,11 +45,17 @@ clockin_status_t populate_tasks_for_guild(clockin_state_t* state, uint64_t guild
 	uint32_t task_index = 0;
 
 	while(fgets(line_buffer, state->config->task_description_length + 1, task_file)) {
-		strcpy(state->task_buffers[guild_index]->tasks[task_index]->description, line_buffer);
+		strcpy(
+			state->task_buffers[guild_index]->tasks[task_index].description,
+			line_buffer
+		);
 
+		state->task_buffers[guild_index]->count++;
 		task_index++;
 	}
 
 	fclose(task_file);
+
+	return CLOCKIN_SUCCESS;
 }
 

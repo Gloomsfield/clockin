@@ -1,7 +1,8 @@
 #include "state.h"
 
-#include "stdlib.h"
-#include "string.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 clockin_status_t new_state(clockin_config_t config, clockin_state_t** state) {
 	clockin_state_t new_state = { 0 };
@@ -12,8 +13,11 @@ clockin_status_t new_state(clockin_config_t config, clockin_state_t** state) {
 	new_state.config = config_ptr;
 
 	new_state.guild_ids = calloc(new_state.config->guild_capacity, sizeof(uint64_t));
+	new_state.task_buffers = calloc(new_state.config->guild_capacity, sizeof(task_buffer_t*));
 
 	for(uint32_t i = 0; i < new_state.config->guild_capacity; i++) {
+		new_state.task_buffers[i] = calloc(1, sizeof(task_buffer_t));
+
 		clockin_status_t res = new_task_buffer(
 			*(new_state.config),
 			&(new_state.task_buffers[i])

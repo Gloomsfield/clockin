@@ -5,7 +5,7 @@
 #include "status.h"
 
 typedef struct task_buffer_t {
-	task_t** tasks;
+	task_t* tasks;
 	uint32_t capacity;
 	uint32_t count;
 } task_buffer_t;
