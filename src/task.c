@@ -15,7 +15,7 @@ clockin_status_t new_task(clockin_config_t config, task_t* task) {
 	return CLOCKIN_SUCCESS;
 }
 
-void free_task(task_t ** task) {
+void free_task(task_t** task) {
 	free((*task)->description);
 	(*task)->description = NULL;
 

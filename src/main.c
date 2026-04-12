@@ -1,4 +1,6 @@
+#include "config.h"
 #include "parser.h"
+#include "state.h"
 
 #include <concord/discord.h>
 
