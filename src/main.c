@@ -16,7 +16,7 @@
 #define BOT_TOKEN "aaaaaaaa"
 #endif
 
-static task_buffer_t task_buffer;
+static clockin_state_t clockin_state;
 
 void on_ready(struct discord* client, const struct discord_ready* event) {
 	struct discord_create_guild_application_command clockin_tasks_params = {
@@ -56,13 +56,36 @@ void on_interaction(struct discord* client, const struct discord_interaction* ev
 	}
 }
 
-int main() {
-	uint32_t task_capacity = 512;
-	task_t* task_memory = calloc(task_capacity, sizeof(task_t));
+int main(int argc, const char* argv[]) {
+	if(argc != 2) { exit(-2); }
+	
+	clockin_config_t config = {
+		.task_directory = argv[1],
+		.task_capacity = 512,
+		.task_description_length = 512,
+	};
 
+
+}
+
+int main2(int argc, const char* argv[]) {
+	if(argc != 2) {
+		printf("please pass clockin the path to your guild task directory.");
+		exit(-1);
+	}
+
+	clockin_config_t config = {
+		.task_directory = argv[1],
+		.task_capacity = 512,
+	};
+
+	task_buffer_t task_buffer = {
+		.capacity = 512,
+		.count = 0,
+	};
+
+	task_t* task_memory = calloc(task_buffer.capacity, sizeof(task_t));
 	task_buffer.tasks = task_memory;
-	task_buffer.capacity = task_capacity;
-	task_buffer.count = 0;
 
 	if(parse_tasks_from_file("./examples/tasks.txt", &task_buffer) != CLOCKIN_SUCCESS) {
 		exit(-1);

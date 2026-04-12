@@ -6,7 +6,7 @@
 
 #define GUILD_ID_STRING_LENGTH 19
 
-clockin_status_t read_tasks_for_guild(
+clockin_status_t populate_guild_tasks(
 	clockin_config_t* config,
 	uint64_t guild_id,
 	task_buffer_t* task_buffer
