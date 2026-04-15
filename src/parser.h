@@ -1,9 +1,9 @@
 #pragma once
 
-#include "state.h"
+#include "instance.h"
 #include "status.h"
 
 #include <inttypes.h>
 
-clockin_status_t populate_tasks_for_guild(clockin_state_t* state, uint64_t guild_id);
+clockin_status_t populate_tasks_for_guild(clockin_instance_t* instance, uint64_t guild_id);
 

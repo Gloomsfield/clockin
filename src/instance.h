@@ -7,7 +7,7 @@
 
 #include <inttypes.h>
 
-struct clockin_state_t {
+struct clockin_instance_t {
 	clockin_config_t* config;
 	
 	tasklist_t** tasklists;
@@ -16,7 +16,7 @@ struct clockin_state_t {
 	uint32_t guild_count;
 };
 
-clockin_status_t new_state(clockin_config_t config, clockin_state_t** state);
+clockin_status_t new_instance(clockin_config_t config, clockin_instance_t** instance);
 
-void free_state(clockin_state_t** state);
+void free_instance(clockin_instance_t** instance);
 

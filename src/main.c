@@ -1,6 +1,6 @@
 #include "config.h"
 #include "parser.h"
-#include "state.h"
+#include "instance.h"
 
 #include <concord/discord.h>
 
@@ -38,23 +38,23 @@ void on_interaction(struct discord* client, const struct discord_interaction* ev
 		return;
 	}
 
-	clockin_state_t* clockin_state = discord_get_data(client);
+	clockin_instance_t* clockin_instance = discord_get_data(client);
 
 	if(strcmp(event->data->name, "clockin-tasks") == 0) {
 		uint32_t guild_index = 0;
 
-		for(guild_index = 0; guild_index < clockin_state->guild_count; guild_index++) {
-			if(event->guild_id == clockin_state->guild_ids[guild_index]) { break; }
+		for(guild_index = 0; guild_index < clockin_instance->guild_count; guild_index++) {
+			if(event->guild_id == clockin_instance->guild_ids[guild_index]) { break; }
 		}
 
-		if(clockin_state->guild_count <= guild_index) {
-			populate_tasks_for_guild(clockin_state, event->guild_id);
+		if(clockin_instance->guild_count <= guild_index) {
+			populate_tasks_for_guild(clockin_instance, event->guild_id);
 		}
 
 		char* message = calloc(2048, sizeof(char));
 
 		if(write_tasks(
-			clockin_state->tasklists[guild_index],
+			clockin_instance->tasklists[guild_index],
 			message,
 			2048
 		) != CLOCKIN_SUCCESS) {
@@ -84,15 +84,15 @@ int main(int argc, const char* argv[]) {
 		.guild_capacity = 4,
 	};
 
-	clockin_state_t* clockin_state = calloc(1, sizeof(clockin_state_t));
+	clockin_instance_t* clockin_instance = calloc(1, sizeof(clockin_instance_t));
 
-	if(new_state(config, &clockin_state) != CLOCKIN_SUCCESS) {
+	if(new_instance(config, &clockin_instance) != CLOCKIN_SUCCESS) {
 		exit(-3);
 	}
 
 	struct discord* client = discord_init(BOT_TOKEN);
 
-	discord_set_data(client, clockin_state);
+	discord_set_data(client, clockin_instance);
 
 	discord_set_on_ready(client, &on_ready);
 	discord_set_on_interaction_create(client, &on_interaction);
