@@ -5,7 +5,7 @@ SRC_DIR = src
 BUILD_DIR = build
 SECRETS_DIR = secrets
 
-SRC_FILES = main.c parser.c state.c task-buffer.c task.c
+SRC_FILES = main.c parser.c state.c tasklist.c task.c
 
 SRC_PATHS = $(SRC_FILES:%=$(SRC_DIR)/%)
 

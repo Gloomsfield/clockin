@@ -13,14 +13,14 @@ clockin_status_t new_state(clockin_config_t config, clockin_state_t** state) {
 	new_state.config = config_ptr;
 
 	new_state.guild_ids = calloc(new_state.config->guild_capacity, sizeof(uint64_t));
-	new_state.task_buffers = calloc(new_state.config->guild_capacity, sizeof(task_buffer_t*));
+	new_state.tasklists = calloc(new_state.config->guild_capacity, sizeof(tasklist_t*));
 
 	for(uint32_t i = 0; i < new_state.config->guild_capacity; i++) {
-		new_state.task_buffers[i] = calloc(1, sizeof(task_buffer_t));
+		new_state.tasklists[i] = calloc(1, sizeof(tasklist_t));
 
-		clockin_status_t res = new_task_buffer(
+		clockin_status_t res = new_tasklist(
 			*(new_state.config),
-			&(new_state.task_buffers[i])
+			&(new_state.tasklists[i])
 		);
 
 		if(res != CLOCKIN_SUCCESS) { return res; }
@@ -39,12 +39,12 @@ void free_state(clockin_state_t** state) {
 	(*state)->guild_ids = NULL;
 
 	for(uint32_t i = 0; i < (*state)->config->guild_capacity; i++) {
-		free_task_buffer(&(*state)->task_buffers[i]);
-		(*state)->task_buffers[i] = NULL;
+		free_tasklist(&(*state)->tasklists[i]);
+		(*state)->tasklists[i] = NULL;
 	}
 
-	free((*state)->task_buffers);
-	(*state)->task_buffers = NULL;
+	free((*state)->tasklists);
+	(*state)->tasklists = NULL;
 
 	free(*state);
 	*state = NULL;

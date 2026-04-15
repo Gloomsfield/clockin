@@ -46,11 +46,11 @@ clockin_status_t populate_tasks_for_guild(clockin_state_t* state, uint64_t guild
 
 	while(fgets(line_buffer, state->config->task_description_length + 1, task_file)) {
 		strcpy(
-			state->task_buffers[guild_index]->tasks[task_index].description,
+			state->tasklists[guild_index]->tasks[task_index].description,
 			line_buffer
 		);
 
-		state->task_buffers[guild_index]->count++;
+		state->tasklists[guild_index]->count++;
 		task_index++;
 	}
 

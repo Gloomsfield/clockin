@@ -54,7 +54,7 @@ void on_interaction(struct discord* client, const struct discord_interaction* ev
 		char* message = calloc(2048, sizeof(char));
 
 		if(write_tasks(
-			clockin_state->task_buffers[guild_index],
+			clockin_state->tasklists[guild_index],
 			message,
 			2048
 		) != CLOCKIN_SUCCESS) {

@@ -1,28 +1,28 @@
-#include "task-buffer.h"
+#include "tasklist.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-clockin_status_t new_task_buffer(clockin_config_t config, task_buffer_t** buffer) {
-	task_buffer_t new_buffer = { .capacity = config.guild_capacity, .count = 0, };
+clockin_status_t new_tasklist(clockin_config_t config, tasklist_t** buffer) {
+	tasklist_t new_tasklist = { .capacity = config.guild_capacity, .count = 0, };
 
-	new_buffer.tasks = calloc(new_buffer.capacity, sizeof(task_t));
+	new_tasklist.tasks = calloc(new_tasklist.capacity, sizeof(task_t));
 
 	for(int i = 0; i < config.task_capacity; i++) {
-		new_buffer.tasks[i] = (task_t){ 0 };
+		new_tasklist.tasks[i] = (task_t){ 0 };
 
-		clockin_status_t res = new_task(config, &(new_buffer.tasks[i]));
+		clockin_status_t res = new_task(config, &(new_tasklist.tasks[i]));
 
 		if(res != CLOCKIN_SUCCESS) { return res; }
 	}
 
-	memcpy(*buffer, &new_buffer, sizeof(task_buffer_t));
+	memcpy(*buffer, &new_tasklist, sizeof(tasklist_t));
 
 	return CLOCKIN_SUCCESS;
 }
 
-clockin_status_t write_tasks(task_buffer_t* buffer, char* out, uint32_t length) {
+clockin_status_t write_tasks(tasklist_t* buffer, char* out, uint32_t length) {
 	char* str = calloc(length, sizeof(char));
 
 	uint32_t length_remaining = length;
@@ -54,7 +54,7 @@ clockin_status_t write_tasks(task_buffer_t* buffer, char* out, uint32_t length) 
 	return CLOCKIN_SUCCESS;
 }
 
-void free_task_buffer(task_buffer_t** buffer) {
+void free_tasklist(tasklist_t** buffer) {
 	for(uint32_t i = 0; i < (*buffer)->capacity; i++) {
 		free_task(&(*buffer)->tasks);
 		(*buffer)->tasks = NULL;

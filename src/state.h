@@ -2,14 +2,14 @@
 
 #include "config.h"
 #include "status.h"
-#include "task-buffer.h"
+#include "tasklist.h"
 
 #include <inttypes.h>
 
 typedef struct clockin_state_t {
 	clockin_config_t* config;
 	
-	task_buffer_t** task_buffers;
+	tasklist_t** tasklists;
 	uint64_t* guild_ids;
 
 	uint32_t guild_count;
